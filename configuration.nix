@@ -72,6 +72,11 @@
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 
+  programs.ssh.agent.enable = true;
+  programs.ssh.addKeysToAgent = [
+  	"/home/server/.ssh/github"
+  	];
+
   # Enable Tailscale
   services.tailscale.enable = true;
 
