@@ -15,8 +15,10 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "n8n-server"; # Define your hostname.
-  # networking.wireless.enable = true;  
-  networking.networkmanager.enable = true;  
+  # Pick only one of the below networking options.
+  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  systemd.services.NetworkManager-wait-online.enable = false; #YOLO
 
   # Set your time zone.
   time.timeZone = "America/New_York";
@@ -25,51 +27,36 @@
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
-  # Select internationalisation properties.
-  # i18n.defaultLocale = "en_US.UTF-8";
-  # console = {
-  #   font = "Lat2-Terminus16";
-  #   keyMap = "us";
-  #   useXkbConfig = true; # use xkb.options in tty.
-  # };
-
-  # Enable the X11 windowing system.
-  # services.xserver.enable = true;
-
-
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.server = {
+   users.users.server = {
      isNormalUser = true;
-     extraGroups = [ "wheel" "docker" "sudo" ]; 
+     extraGroups = [ "wheel" "sudo" ]; # Enable ‘sudo’ for the user.
      packages = with pkgs; [
-       tree
+       neovim
        neofetch
+       git
      ];
    };
 
-  # programs.firefox.enable = true;
-
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  environment.systemPackages = with pkgs; [
+   environment.systemPackages = with pkgs; [
      neovim 
      wget
-  ];
+   ];
 
-	# simple neovim config
-
-	programs.neovim = {
-	  enable = true;
-	  configure = {
-	    customRC = ''
-	      set number
-	      set nowrap
-	      set cc=80
-	      set list
-	      set listchars=tab:→\ ,space:·,nbsp:␣,trail:•,eol:¶,precedes:«,extends:»
-	    '';
-	    packages.myVimPackage = with pkgs.vimPlugins; {
-	      start = [ ctrlp ];
+  programs.neovim = {
+  enable = true;
+  configure = {
+    customRC = ''
+      set number
+      set nowrap
+      set cc=80
+      set list
+      set listchars=tab:→\ ,space:·,nbsp:␣,trail:•,eol:¶,precedes:«,extends:»
+    '';
+    packages.myVimPackage = with pkgs.vimPlugins; {
+      start = [ ctrlp ];
 	    };
 	  };
 	  defaultEditor = true;
@@ -77,12 +64,13 @@
 	  vimAlias = true;
 	};
 
-
   # List services that you want to enable:
-  services.tailscale.enable = true;
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
+
+  # Enable Tailscale
+  services.tailscale.enable = true;
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
@@ -95,7 +83,7 @@
   # accidentally delete configuration.nix.
   system.copySystemConfiguration = true;
 
-  system.stateVersion = "24.11"; # Did you read the comment?
+  system.stateVersion = "24.11"; 
 
 }
 
