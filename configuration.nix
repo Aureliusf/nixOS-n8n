@@ -8,6 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ./nvim.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -32,7 +33,6 @@
      isNormalUser = true;
      extraGroups = [ "wheel" "sudo" "docker" ]; # Enable ‘sudo’ for the user.
      packages = with pkgs; [
-       neovim
        neofetch
        git
      ];
@@ -44,25 +44,6 @@
      neovim 
      wget
    ];
-
-  programs.neovim.configure = {
-      customRC = ''
-      set number
-      set nowrap
-      set cc=80
-      set list
-      set listchars=tab:→\ ,space:·,nbsp:␣,trail:•,eol:¶,precedes:«,extends:»
-      if &diff
-        colorscheme blue
-      endif
-    '';
-    packages.myVimPackage = with pkgs.vimPlugins; {
-      start = [ ctrlp ];
-	    };
-	  defaultEditor = true;
-	  viAlias = true;
-	  vimAlias = true;
-  };
 
   # List services that you want to enable:
 
