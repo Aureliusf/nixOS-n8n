@@ -59,11 +59,10 @@
     packages.myVimPackage = with pkgs.vimPlugins; {
       start = [ ctrlp ];
 	    };
-	  };
 	  defaultEditor = true;
 	  viAlias = true;
 	  vimAlias = true;
-	};
+  };
 
   # List services that you want to enable:
 
