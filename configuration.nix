@@ -45,9 +45,7 @@
      wget
    ];
 
-  programs.neovim = {
-  enable = true;
-  configure = {
+  programs.neovim.configure = {
       customRC = ''
       set number
       set nowrap
