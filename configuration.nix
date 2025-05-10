@@ -30,7 +30,7 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
    users.users.server = {
      isNormalUser = true;
-     extraGroups = [ "wheel" "sudo" ]; # Enable ‘sudo’ for the user.
+     extraGroups = [ "wheel" "sudo" "docker" ]; # Enable ‘sudo’ for the user.
      packages = with pkgs; [
        neovim
        neofetch
@@ -65,6 +65,12 @@
   };
 
   # List services that you want to enable:
+
+  virtualisation.docker.enable = true;
+  virtualisation.docker.rootless = {
+  	enable = true;
+	setSocketVariable = true;
+  };
 
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
