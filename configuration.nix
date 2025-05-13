@@ -24,6 +24,9 @@
   # Set your time zone.
   time.timeZone = "America/New_York";
 
+  # Configure network proxy if necessary
+  # networking.proxy.default = "http://user:password@proxy:port/";
+  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
    users.users.server = {
@@ -57,45 +60,11 @@
   # Enable Tailscale
   services.tailscale.enable = true;
 
-  # Enable Nginx service
-  services.nginx.enable = true;
-
-  services.nginx.virtualHosts."base.org.es" = {
-  	enableACME = true;
-	serverNames = [
-		"base.org.es"
-		"n8n-server.taild6c47b.ts.net"
-		"100.127.235.99"
-	];
-
-  services.nginx.acme.email = "aurelio@florezdelvalle.com";
-  services.nginx.acme.acceptTerms = true;
-
-	forceSSL = true;
-
-	    # Configure the proxy pass to your Docker container on port 80
-    locations."/" = {
-      proxyPass = "http://0.0.0.0:80"; # Assuming docker is on the same host
-      # Optional: Add proxy headers
-      extraConfig = ''
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-      '';
-    };
-
-    # Optional: Configure logging
-    accessLog.enable = true;
-    errorLog.enable = true;
-
-  };
-
-
-  # Allow traffic into 443 and 80
-  networking.firewall.allowedTCPPorts = [ 80 443 ];
-
-
+  # Open ports in the firewall.
+  # networking.firewall.allowedTCPPorts = [ ... ];
+  # networking.firewall.allowedUDPPorts = [ ... ];
+  # Or disable the firewall altogether.
+  # networking.firewall.enable = false;
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
