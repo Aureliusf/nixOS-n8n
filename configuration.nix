@@ -24,10 +24,6 @@
   # Set your time zone.
   time.timeZone = "America/New_York";
 
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
   # Define a user account. Don't forget to set a password with ‘passwd’.
    users.users.server = {
      isNormalUser = true;
@@ -60,11 +56,15 @@
   # Enable Tailscale
   services.tailscale.enable = true;
 
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
+  # Nginx Reverse Proxy
+
+  services.nginx = {
+	  enable = true;
+	  virtualHosts."base.org.es" = {
+    		locations."/".proxyPass = "http://127.0.0.1:80";
+	  };
+  };
+
 
   # Copy the NixOS configuration file and link it from the resulting system
   # (/run/current-system/configuration.nix). This is useful in case you
