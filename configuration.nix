@@ -71,6 +71,12 @@
   # accidentally delete configuration.nix.
   system.copySystemConfiguration = true;
 
+  # Set up Github ssh authorization on build
+  programs.bash.shellAliases = {
+	  githubssh = "eval '$(ssh-agent -s)'; ssh-add ~/.ssh/github";
+  };
+
+
   system.stateVersion = "24.11"; 
 
 }
