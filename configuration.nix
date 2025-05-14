@@ -33,6 +33,38 @@
        git
      ];
    };
+   users.users.web= {
+    isNormalUser = true;
+    description = "Webapp SSH Tunnel User";
+    home = "/var/lib/web";
+    # Set shell to nologin to prevent shell access
+    shell = "/run/current-system/sw/bin/nologin";
+
+    # Optional: restrict SSH commands via authorized_keys command=...
+    # You can add this in your authorized_keys file if needed
+  };
+
+  # Add github and Serveo keys every time
+  environment.etc."ssh/authorized_keys" = {
+    source = ''
+      ${builtins.readFile "/home/server/.ssh/github.pub"}
+      ${builtins.readFile "/home/server/.ssh/serveo.pub"}
+    '';
+  };
+
+  systemd.services.autossh-tunnel = {
+    description = "Persistent autossh tunnel for webapp";
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      ExecStart = ''
+        /run/current-system/sw/bin/autossh -M 0 -N -o "ServerAliveInterval 30" -o "ServerAliveCountMax 3" -R ssh -R n8n-i4nm:80:localhost:80 n8n-i4nm@serveo.net
+      '';
+      
+      Restart = "always";
+      User = "web";
+    };
+  };
 
   # List packages installed in system profile. To search, run:
    environment.systemPackages = with pkgs; [
@@ -40,6 +72,7 @@
      wget
      htop
      tmux
+     autossh
    ];
 
   # List services that you want to enable:
