@@ -45,12 +45,9 @@
   };
 
   # Add github and Serveo keys every time
-  environment.etc."ssh/authorized_keys" = {
-    source = ''
-      ${builtins.readFile "/home/server/.ssh/github.pub"}
-      ${builtins.readFile "/home/server/.ssh/serveo.pub"}
-    '';
-  };
+  users.users.server.openssh.authorizedKeys.keys = [ "/home/server/.ssh/github.pub" ];
+
+  users.users.web.openssh.authorizedKeys.keys = [ "/home/server/.ssh/serveo.pub" ];
 
   systemd.services.autossh-tunnel = {
     description = "Persistent autossh tunnel for webapp";
@@ -84,7 +81,10 @@
   };
 
   # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
+  services.openssh = {
+  	enable = true;
+	settings.PasswordAuthentication = false;
+  };
 
   # Enable Tailscale
   services.tailscale.enable = true;
