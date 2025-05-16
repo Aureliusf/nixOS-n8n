@@ -27,7 +27,7 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
    users.users.server = {
      isNormalUser = true;
-     extraGroups = [ "wheel" "sudo" "docker" ]; # Enable ‘sudo’ for the user.
+     extraGroups = [ "wheel" "sudo" "docker" "serveo-key" ]; # Enable ‘sudo’ for the user.
      packages = with pkgs; [
        neofetch
        git
@@ -36,18 +36,47 @@
    users.users.web= {
     isNormalUser = true;
     description = "Webapp SSH Tunnel User";
-    home = "/var/lib/web";
+    home = "/home/web";
+    extraGroups = [ "serveo-key" ]; # Enable ‘sudo’ for the user.
     # Set shell to nologin to prevent shell access
-    shell = "/run/current-system/sw/bin/nologin";
+    #shell = "/run/current-system/sw/bin/nologin";
 
     # Optional: restrict SSH commands via authorized_keys command=...
     # You can add this in your authorized_keys file if needed
   };
 
   # Add github and Serveo keys every time
-  users.users.server.openssh.authorizedKeys.keys = [ "/home/server/.ssh/github.pub" ];
 
-  users.users.web.openssh.authorizedKeys.keys = [ "/home/server/.ssh/serveo.pub" ];
+  programs.ssh.startAgent = true;
+
+  users.users.server.openssh.authorizedKeys.keys = [ 
+  	"/home/server/.ssh/github.pub" 
+  ];
+
+  users.users.web.openssh.authorizedKeys.keys = [ 
+  	"/home/web/.ssh/serveo.pub" 
+  	#"command='autossh'"
+  ];
+
+  # Enable the OpenSSH daemon.
+  services.openssh = {
+  	enable = true;
+	settings = {
+		PasswordAuthentication = true;
+		PrintMotd = true;
+	};
+  };
+
+  services.fail2ban = {
+  	enable = true;
+	maxretry = 3;
+	bantime-increment.enable = true;
+	ignoreIP = [
+		"127.0.0.1/8"
+		"10.0.0.174"
+		"100.67.201.23"
+	];
+  };
 
   systemd.services.autossh-tunnel = {
     description = "Persistent autossh tunnel for webapp";
@@ -55,7 +84,7 @@
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       ExecStart = ''
-        /run/current-system/sw/bin/autossh -M 0 -N -o "ServerAliveInterval 30" -o "ServerAliveCountMax 3" -R ssh -R n8n-i4nm:80:localhost:80 n8n-i4nm@serveo.net
+        /run/current-system/sw/bin/autossh -M 0 -N -o "ServerAliveInterval 30" -o "ServerAliveCountMax 3" -R n8n-i4nm:80:localhost:80 n8n-i4nm@serveo.net
       '';
       
       Restart = "always";
@@ -80,14 +109,23 @@
 	setSocketVariable = true;
   };
 
-  # Enable the OpenSSH daemon.
-  services.openssh = {
-  	enable = true;
-	settings.PasswordAuthentication = false;
-  };
 
   # Enable Tailscale
   services.tailscale.enable = true;
+
+
+  # Networking
+  # Enable SSH access in from Tailscale network 22
+  # Enable http/s traffic to go through 80 and 443
+  networking.firewall = {
+	  enable = true;
+	  trustedInterfaces = ["tailscale0"];
+	  allowedUDPPorts = [config.services.tailscale.port];
+	  allowedTCPPorts = [ 22 443 80];
+  	
+  };
+
+  
 
 
   # Copy the NixOS configuration file and link it from the resulting system
