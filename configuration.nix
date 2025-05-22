@@ -55,6 +55,7 @@
 
   users.users.web.openssh.authorizedKeys.keys = [ 
   	"/home/web/.ssh/serveo.pub" 
+  	"/home/web/.ssh/sanlutex.pub" 
   	#"command='autossh'"
   ];
 
@@ -84,7 +85,7 @@
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
       ExecStart = ''
-        /run/current-system/sw/bin/autossh -M 0 -N -o "ServerAliveInterval 30" -o "ServerAliveCountMax 3" -R n8n-i4nm:80:localhost:80 n8n-i4nm@serveo.net
+        /run/current-system/sw/bin/autossh -M 0 -N -o "ServerAliveInterval 30" -o "ServerAliveCountMax 3" -R -p 1020 8080:localhost:7575 baseorg@sanlutex.45st.com
       '';
       
       Restart = "always";
