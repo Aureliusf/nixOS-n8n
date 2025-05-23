@@ -89,7 +89,7 @@
       '';
       
       Restart = "always";
-      User = "web";
+      User = "server";
     };
   };
 
@@ -113,6 +113,9 @@
 
   # Enable Tailscale
   services.tailscale.enable = true;
+
+  # Enable netbird
+  services.netbird.enable = true;
 
 
   # Networking
