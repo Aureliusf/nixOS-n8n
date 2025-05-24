@@ -113,7 +113,7 @@
 
   # Set up alias to serve publicly
   programs.bash.shellAliases = {
-	  serveItQueen = "autossh -M 0 -N -o "ServerAliveInterval 30" -o "ServerAliveCountMax 3" -R  7575:localhost:80 linuxuser@base.org.es";
+	  serveItQueen = "autossh -M 0 -N -o 'ServerAliveInterval 30' -o 'ServerAliveCountMax 3' -R  7575:localhost:80 linuxuser@base.org.es";
   };
 
 
