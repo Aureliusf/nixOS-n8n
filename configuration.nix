@@ -27,23 +27,12 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
    users.users.server = {
      isNormalUser = true;
-     extraGroups = [ "wheel" "sudo" "docker" "serveo-key" ]; # Enable ‘sudo’ for the user.
+     extraGroups = [ "wheel" "sudo" "docker" ]; # Enable ‘sudo’ for the user.
      packages = with pkgs; [
        neofetch
        git
      ];
    };
-   users.users.web= {
-    isNormalUser = true;
-    description = "Webapp SSH Tunnel User";
-    home = "/home/web";
-    extraGroups = [ "serveo-key" ]; # Enable ‘sudo’ for the user.
-    # Set shell to nologin to prevent shell access
-    #shell = "/run/current-system/sw/bin/nologin";
-
-    # Optional: restrict SSH commands via authorized_keys command=...
-    # You can add this in your authorized_keys file if needed
-  };
 
   # Add github and Serveo keys every time
 
@@ -51,13 +40,9 @@
 
   users.users.server.openssh.authorizedKeys.keys = [ 
   	"/home/server/.ssh/github.pub" 
+  	"/home/server/.ssh/vultr.pub" 
   ];
 
-  users.users.web.openssh.authorizedKeys.keys = [ 
-  	"/home/web/.ssh/serveo.pub" 
-  	"/home/web/.ssh/sanlutex.pub" 
-  	#"command='autossh'"
-  ];
 
   # Enable the OpenSSH daemon.
   services.openssh = {
@@ -77,20 +62,6 @@
 		"10.0.0.174"
 		"100.67.201.23"
 	];
-  };
-
-  systemd.services.autossh-tunnel = {
-    description = "Persistent autossh tunnel for webapp";
-    after = [ "network.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      ExecStart = ''
-        /run/current-system/sw/bin/autossh -M 0 -N -o "ServerAliveInterval 30" -o "ServerAliveCountMax 3" -R -p 1020 8080:localhost:7575 baseorg@sanlutex.45st.com
-      '';
-      
-      Restart = "always";
-      User = "server";
-    };
   };
 
   # List packages installed in system profile. To search, run:
@@ -135,9 +106,14 @@
   # accidentally delete configuration.nix.
   system.copySystemConfiguration = true;
 
-  # Set up Github ssh authorization on build
+  # Set up alias for Github ssh authorization on build
   programs.bash.shellAliases = {
 	  githubssh = "eval '$(ssh-agent -s)'; ssh-add ~/.ssh/github";
+  };
+
+  # Set up alias to serve publicly
+  programs.bash.shellAliases = {
+	  serveItQueen = "autossh -M 0 -N -o "ServerAliveInterval 30" -o "ServerAliveCountMax 3" -R  7575:localhost:80 linuxuser@base.org.es";
   };
 
 
