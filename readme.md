@@ -92,12 +92,12 @@ This setting works even in more complex multi-file configuration system like in 
 
 ````mermaid
 graph TD
-    A[Client Browser] -->|1. HTTP/S Request| B(base.org.es)
-    B -->|"2. DNS Resolution (Vultr)"| C[Vultr Instance]
-    C -->|"3. Nginx (Port 80/443)"| D{"Vultr Internal Port 7575"}
-    D -->|"4. SSH Tunnel (Vultr Side)"| E((SSH Tunnel))
-    E -->|"5. SSH Tunnel (Local Side)"| F[Your Local Machine]
-    F -->|"6. Local Port Forwarding"| G(n8n Server)
+    A[Client Browser] -->|HTTP/S Request| B(base.org.es)
+    B -->|"DNS Resolution (Vultr)"| C[Vultr Instance]
+    C -->|"Nginx (Port 80/443)"| D{"Vultr Internal Port 7575"}
+    D -->|"SSH Tunnel (Vultr Side)"| E((SSH Tunnel))
+    E -->|"SSH Tunnel (Local Side)"| F[Your Local Machine]
+    F -->|"Local Port Forwarding"| G(n8n Server)
 
     subgraph Vultr Infrastructure
         C
