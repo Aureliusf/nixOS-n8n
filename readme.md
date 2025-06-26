@@ -109,9 +109,6 @@ graph TD
         G
     end
 
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style G fill:#9cf,stroke:#333,stroke-width:2px
-
     %% Flow Explanations
     click A "User's browser initiates request"
     click B "Domain resolves to Vultr IP via DNS"
