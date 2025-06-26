@@ -94,9 +94,9 @@ This setting works even in more complex multi-file configuration system like in 
 graph TD
     A[Client Browser] -->|HTTP/S Request| B(base.org.es)
     B -->|"DNS Resolution (Vultr)"| C[Vultr Instance]
-    C -->|"Nginx (Port 80/443)"| D{"Vultr Internal Port 7575"}
+    C -->|"Nginx"| D{"Vultr Internal Port 7575"}
     D -->|"SSH Tunnel (Vultr Side)"| E((SSH Tunnel))
-    E -->|"SSH Tunnel (Local Side)"| F[Your Local Machine]
+    E -->|"SSH Tunnel (Local Side)"| F[Local n8n Machine]
     F -->|"Local Port Forwarding"| G(n8n Server)
 
     subgraph Vultr Infrastructure
