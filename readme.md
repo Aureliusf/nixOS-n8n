@@ -18,6 +18,7 @@ Because the system is meant to be declarative and dependencies are separately st
 
 TBD will transfer from docker to running directly with npx. 
 
+To have run the container, it pretty much worked right away. n8n needs SSL certificates to work properly, other than that I used the docker compose on the docs changing a couple details and importing the DB secrets from an .env file
 # nixOS
 
 [nixOS](https://nixos.wiki/) is a Linux distribution based on the nix package manager that uses an immutable design and an atomic update model. 
@@ -89,7 +90,11 @@ To fix this, you can set up nixOS to copy your config files to the appropriate s
 This setting works even in more complex multi-file configuration system like in my regular dotfiles.
 
 # Serve
+The easiest and safest way I found to serve a locally hosted service through a public domain that can get Let's Encrypt SSL certificates is with an ssh tunnel.
+I started using Serveo with worked great BUT it would disconnect at once a day even when using autossh. For that I had to move into hosting my own public facing server.
+I chose to use Vultr with the cheapest possible VPS. It runs nginx in an AlmaLinux system.
 
+This is the flow for a given user:
 ````mermaid
 graph TD
     A[Client Browser] -->|HTTP/S Request| B(base.org.es)
@@ -118,5 +123,7 @@ graph TD
     click F "Local machine receives forwarded traffic from SSH tunnel"
     click G "n8n server receives traffic on its local port"
 
-
 ````
+This way I don't need to open any ports in my local network and open my homelab this way. With this ssh tunnel, traffic should only be able to access what is served on the local port is pointed to and nothing else. 
+
+This means that I am unable to ssh into my n8n-server through base.org.es at all even though sshd is running, even from one of the whitelisted IPs.
