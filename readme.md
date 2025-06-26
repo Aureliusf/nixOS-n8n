@@ -111,4 +111,3 @@ graph TD
 ````
 This way, I don't need to open any ports in my local network or open my homelab this way. With this ssh tunnel, traffic should only be able to access what is served on the local port is pointed to and nothing else.
 This means that I am unable to ssh into my n8n-server through base.org.es at all, even though sshd is running, even from one of the allowed IPs.
-```
