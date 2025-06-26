@@ -96,8 +96,8 @@ graph TD
     B -->|"DNS Resolution (Vultr)"| C[Vultr Instance]
     C -->|"Nginx"| D{"Vultr Internal Port 7575"}
     D -->|"SSH Tunnel (Vultr Side)"| E((SSH Tunnel))
-    E -->|"SSH Tunnel (Local Side)"| F[Local n8n Machine]
-    F -->|"Local Port Forwarding"| G(n8n Server)
+    E -->|"SSH Tunnel (Local Side)"| F[Local nixOS n8n-server]
+    F -->|"Local Port Forwarding"| G(n8n container)
 
     subgraph Vultr Infrastructure
         C
