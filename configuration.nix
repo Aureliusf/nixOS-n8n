@@ -110,7 +110,8 @@
      autossh
    ];
 
-  # List services that you want to enable:
+
+# Docker
 
   virtualisation.docker.enable = true;
   virtualisation.docker.rootless = {
@@ -133,6 +134,35 @@
 	  allowedUDPPorts = [config.services.tailscale.port];
 	  allowedTCPPorts = [ 22 443 80];
   	
+  };
+
+    # NAS mount
+  fileSystems."/storage/nfs" = {
+    device = "storage.taild6c47b.ts.net:/mnt/all/server-storage";
+    fsType = "nfs";
+    options = ["x-systemd.automount" "noauto"];
+  };
+
+    systemd.services.n8n-backup = {
+    description = "Backup n8n Docker data via rsync";
+    script = ''
+      # The -a flag includes -r (recursive), so we don't need both.
+      # The --delete flag makes the destination an exact mirror.
+      rsync -a --delete /home/server/n8n/data/ /storage/n8n/
+    '';
+    serviceConfig = {
+      Type = "oneshot";
+      User = "root";
+    };
+  };
+
+  systemd.timers.n8n-backup = {
+    description = "Run n8n backup nightly";
+    timerConfig = {
+      OnCalendar = "03:00"; # Runs daily at 3:00 AM
+      Persistent = true;   # Runs on next boot if the system was off at 3 AM
+    };
+    wantedBy = [ "timers.target" ];
   };
 
   
