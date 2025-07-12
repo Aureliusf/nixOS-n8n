@@ -24,14 +24,22 @@
   time.timeZone = "America/New_York";
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.server = {
-    isNormalUser = true;
-    extraGroups = ["wheel" "sudo" "docker"]; # Enable ‘sudo’ for the user.
-    packages = with pkgs; [
-      neofetch
-      git
-    ];
-  };
+   users.users.server = {
+     isNormalUser = true;
+     extraGroups = [ "wheel" "sudo" "docker" ]; # Enable ‘sudo’ for the user.
+     packages = with pkgs; [
+       neofetch
+       git
+     ];
+	};
+
+   users.users.autossh-runner = {
+    isSystemUser = true;
+    group = "nogroup";
+    home = "/var/empty"; # This user doesn't need a home directory.
+  };  
+
+  # Add github and Server keys every time
 
   # SSH configs
   programs.ssh.startAgent = true;
@@ -61,6 +69,37 @@
       "10.0.0.174" # local network traffic
       "100.67.201.23" # local tailscale traffic
     ];
+  };
+	# SSH tunnel service
+
+    systemd.services.autossh-reverse-tunnel = {
+    description = "Persistent autossh reverse tunnel to base.org.es";
+
+    # This service should start after the network is available.
+    after = [ "network.target" ];
+    wantedBy = [ "multi-user.target" ];
+
+    # Service configuration
+    serviceConfig = {
+      # The user the service will run as. Do not run as root.
+      User = "autossh-runner";
+
+      # The full command to execute.
+      # Note we point to the credential file with the `-i` flag.
+      ExecStart = ''
+        ${pkgs.autossh}/bin/autossh -M 0 -N \
+          -o "ServerAliveInterval=30" \
+          -o "ServerAliveCountMax=3" \
+          -o "StrictHostKeyChecking=no" \
+          -o "ExitOnForwardFailure=yes" \
+          -R 7575:localhost:80 \
+          linuxuser@base.org.es
+      '';
+
+      # Automatically restart the service if it fails.
+      Restart = "always";
+      RestartSec = "10s"; # Wait 10 seconds before restarting.
+    };
   };
 
   # List packages installed in system profile. To search, run:
@@ -106,6 +145,39 @@
   # Set up alias to serve publicly 🧚
   programs.bash.shellAliases = {
     serveItQueen = "autossh -M 0 -N -o 'ServerAliveInterval 30' -o 'ServerAliveCountMax 3' -R  7575:localhost:80 linuxuser@base.org.es";
+  };
+
+
+  # NAS mounting
+  fileSystems."/home/aure/storage/nfs" = {
+    device = "storage.tail6c47b.ts.net:/mnt/all/server-storage";
+    fsType = "nfs";
+    options = [ "x-systemd.automount" "noauto" ];
+  };
+
+
+  # Backups
+
+    systemd.services.n8n-backup = {
+    description = "Backup n8n Docker data via rsync";
+    script = ''
+      # The -a flag includes -r (recursive), so we don't need both.
+      # The --delete flag makes the destination an exact mirror.
+      rsync -a --delete /home/server/n8n/data/ /storage/n8n/
+    '';
+    serviceConfig = {
+      Type = "oneshot";
+      User = "root";
+    };
+  };
+
+  systemd.timers.n8n-backup = {
+    description = "Run n8n backup nightly";
+    timerConfig = {
+      OnCalendar = "03:00"; # Runs daily at 3:00 AM
+      Persistent = true;   # Runs on next boot if the system was off at 3 AM
+    };
+    wantedBy = [ "timers.target" ];
   };
 
   system.stateVersion = "24.11";
