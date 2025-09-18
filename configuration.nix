@@ -34,9 +34,10 @@
 
    users.users.autossh-runner = {
     isSystemUser = true;
-    group = "nogroup";
-    home = "/var/empty"; # This user doesn't need a home directory.
+    group = "wheel";
+    home = "/home/autossh-runner"; 
   };  
+
    users.users.backup = {
     isSystemUser = true;
     group = "nogroup";
@@ -51,8 +52,12 @@
   # Add github and public facing server keys every time
 
   users.users.server.openssh.authorizedKeys.keys = [
-    "~/.ssh/github.pub"
-    "~/.ssh/vultr.pub"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIwBDrGxREitq7swtiMea2Q5cuhtcgqLJRcptqDxlZXc aurelio@florezdelvalle.com"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGGghZlBZXq467Dj/TLX4gyiwqAVwpc9T8KLuow5G8VS"
+  ];
+
+  users.users.autossh-runner.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGGghZlBZXq467Dj/TLX4gyiwqAVwpc9T8KLuow5G8VS"
   ];
 
   # Enable the OpenSSH daemon.
@@ -74,7 +79,7 @@
       "100.64.0.0/10" # local tailscale traffic
     ];
   };
-	# SSH tunnel service
+		# SSH tunnel service
 
     systemd.services.autossh-reverse-tunnel = {
     description = "Persistent autossh reverse tunnel to base.org.es";
