@@ -94,7 +94,6 @@
       User = "autossh-runner";
 
       # The full command to execute.
-      # Note we point to the credential file with the `-i` flag.
       ExecStart = ''
         ${pkgs.autossh}/bin/autossh -M 0 -N \
           -o "ServerAliveInterval=30" \
