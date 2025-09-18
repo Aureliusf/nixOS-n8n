@@ -25,8 +25,8 @@ This is what I did to ensure ssh would be available every time the system boots 
   # Add github and public facing server keys every time
 
   users.users.server.openssh.authorizedKeys.keys = [
-    "/home/server/.ssh/github.pub"
-    "/home/server/.ssh/vultr.pub"
+    "~/.ssh/github.pub"
+    "~/.ssh/vultr.pub"
   ];
 
   # Enable the OpenSSH daemon.
