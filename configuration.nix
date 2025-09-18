@@ -14,8 +14,8 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "n8n-server"; # Define your hostname.
-  # Pick only one of the below networking options.
+  networking.hostName = "n8n-server"; 
+
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
   systemd.services.NetworkManager-wait-online.enable = false; #YOLO
@@ -23,7 +23,6 @@
   # Set your time zone.
   time.timeZone = "America/New_York";
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
    users.users.server = {
      isNormalUser = true;
      extraGroups = [ "wheel" "sudo" "docker" ]; # Enable ‘sudo’ for the user.
@@ -38,6 +37,11 @@
     group = "nogroup";
     home = "/var/empty"; # This user doesn't need a home directory.
   };  
+   users.users.backup = {
+    isSystemUser = true;
+    group = "nogroup";
+    home = "/var/empty"; # This user doesn't need a home directory.
+  };  
 
   # Add github and Server keys every time
 
@@ -47,8 +51,8 @@
   # Add github and public facing server keys every time
 
   users.users.server.openssh.authorizedKeys.keys = [
-    "/home/server/.ssh/github.pub"
-    "/home/server/.ssh/vultr.pub"
+    "~/.ssh/github.pub"
+    "~/.ssh/vultr.pub"
   ];
 
   # Enable the OpenSSH daemon.
@@ -67,7 +71,7 @@
     ignoreIP = [
       "127.0.0.1/8" # local machine traffic
       "10.0.0.174" # local network traffic
-      "100.67.201.23" # local tailscale traffic
+      "100.64.0.0/10" # local tailscale traffic
     ];
   };
 	# SSH tunnel service
@@ -90,7 +94,7 @@
         ${pkgs.autossh}/bin/autossh -M 0 -N \
           -o "ServerAliveInterval=30" \
           -o "ServerAliveCountMax=3" \
-          -o "StrictHostKeyChecking=no" \
+          -o "StrictHostKeyChecking=yes" \
           -o "ExitOnForwardFailure=yes" \
           -R 7575:localhost:80 \
           linuxuser@base.org.es
@@ -163,11 +167,11 @@
     script = ''
       # The -a flag includes -r (recursive), so we don't need both.
       # The --delete flag makes the destination an exact mirror.
-      rsync -a --delete /home/server/n8n/data/ /storage/n8n/
+      rsync -a --delete /n8n/data/ /storage/n8n/
     '';
     serviceConfig = {
       Type = "oneshot";
-      User = "root";
+      User = "backup";
     };
   };
 
