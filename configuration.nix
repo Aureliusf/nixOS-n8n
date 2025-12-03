@@ -146,14 +146,10 @@
   # accidentally delete configuration.nix.
   system.copySystemConfiguration = true;
 
-  # Set up alias for Github ssh
-  programs.bash.shellAliases = {
-    githubssh = "eval '$(ssh-agent -s)'; ssh-add ~/.ssh/github";
-  };
-
   # Set up alias to serve publicly 🧚
   programs.bash.shellAliases = {
     serveItQueen = "autossh -M 0 -N -o 'ServerAliveInterval 30' -o 'ServerAliveCountMax 3' -R  7575:localhost:80 linuxuser@base.org.es";
+    githubssh = "eval '$(ssh-agent -s)'; ssh-add ~/.ssh/github";
   };
 
 
