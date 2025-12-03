@@ -157,8 +157,8 @@
 
 
   # NAS mounting
-  fileSystems."/home/aure/storage/nfs" = {
-    device = "storage.tail6c47b.ts.net:/mnt/all/server-storage";
+  fileSystems."/storage/nfs" = {
+    device = "florencia-storage.taild6c47b.ts.net:/mnt/all/server-storage";
     fsType = "nfs";
     options = [ "x-systemd.automount" "noauto" ];
   };
@@ -171,7 +171,7 @@
     script = ''
       # The -a flag includes -r (recursive), so we don't need both.
       # The --delete flag makes the destination an exact mirror.
-      rsync -a --delete /n8n/data/ /storage/n8n/
+      rsync -a --delete /n8n/data/ /storage/nfs/n8n/
     '';
     serviceConfig = {
       Type = "oneshot";
