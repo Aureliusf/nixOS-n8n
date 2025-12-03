@@ -35,8 +35,9 @@
    users.users.autossh-runner = {
     isSystemUser = true;
     group = "wheel";
-    home = "/home/autossh-runner"; 
-  };  
+    home = "/home/autossh-runner";
+    createHome = true; # <--- ADD THIS
+  };
 
    users.users.backup = {
     isSystemUser = true;
