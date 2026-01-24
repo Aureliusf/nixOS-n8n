@@ -45,6 +45,25 @@
     home = "/var/empty"; # This user doesn't need a home directory.
   };  
 
+  users.users.komodo = {
+    isSystemUser = true;
+    uid = 1002;             # Static UID so we can use it in Compose
+    group = "komodo";
+    extraGroups = [ "docker" ]; 
+    createHome = true;     
+    home = "/home/komodo";
+  };
+
+  users.groups.komodo = {
+    gid = 1002;
+  };
+
+  users.groups.docker.gid = 131;
+
+  systemd.tmpfiles.rules = [
+    "A+ /var/run/docker.sock - - - - u:232073:rw"
+  ];
+
   # Add github and Server keys every time
 
   # SSH configs
