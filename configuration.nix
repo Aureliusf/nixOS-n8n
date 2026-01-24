@@ -21,7 +21,7 @@
   
   nixpkgs.overlays = [
     (final: prev: {
-      unstable = import <nixpkgs-unstable> { 
+      unstable = import (fetchTarball https://nixos.org/channels/nixos-unstable/nixexprs.tar.xz) {
         config = config.nixpkgs.config;
       };
     })
@@ -148,8 +148,9 @@
     htop
     tmux
     autossh
-    unstable.opencode
-  ];
+  ] ++ (with unstable; [
+    opencode
+  ]);
 
   # docker virtualisation
 
