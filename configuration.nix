@@ -16,6 +16,17 @@
 
   networking.hostName = "n8n-server"; 
 
+  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.permittedInsecurePackages = [ "nodejs-18.20.2" "nodejs-18.20.6" "nodejs-18.20.6-deny" ];
+  
+  nixpkgs.overlays = [
+    (final: prev: {
+      unstable = import <nixpkgs-unstable> { 
+        config = config.nixpkgs.config;
+      };
+    })
+  ];
+
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
   systemd.services.NetworkManager-wait-online.enable = false; #YOLO
@@ -137,6 +148,7 @@
     htop
     tmux
     autossh
+    unstable.opencode
   ];
 
   # docker virtualisation
